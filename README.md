@@ -12,7 +12,7 @@
 ### JavaScript の勉強(未経験)
 ### Git/Github の勉強(ほぼ使ったことない)
 ### VSCode を使う(もっぱら Vim)
-### 頭の体操(思考力が低下が酷い)
+### 頭の体操(思考力の低下が酷い)
 
 ## 📋 問い合わせ
 ### [Twitter](https://twitter.com/gnsnghm)
