@@ -1,4 +1,3 @@
-# nlp100
 ![title](https://user-images.githubusercontent.com/41932520/85250944-f5c86f80-b492-11ea-8378-a5a9c41d5de4.png)
 <h2 align="center">言語処理100本ノック JavaScript編</h2>
 <p align="center">
