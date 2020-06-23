@@ -115,6 +115,14 @@ let ArrayHelper = {
         p_concat = p_concat.filter((x, i, self) =>
             self.indexOf(x) === i && i !== self.lastIndexOf(x));
         return p_concat;
+    },
+
+    difference:(x_a, x_b) => {
+        let p_temp = ArrayHelper.intersection(x_a, x_b);
+        // let p_concat = x_a.concat(x_b);
+        let p_concat = x_a;
+        p_concat = p_concat.filter((x, i, self) => p_temp.indexOf(x) == -1);
+        return p_concat;
     }
 }
 
@@ -134,15 +142,29 @@ let q006 = () => {
 
     // 和集合
     let p_ans_union = ArrayHelper.union(p_ans_x, p_ans_y);
-    p_html += "和集合" + dispAry(p_ans_union) + "<br>";
+    p_html += "和集合：" + dispAry(p_ans_union) + "<br>";
 
     // 積集合
     let p_ans_intersection = ArrayHelper.intersection(p_ans_x, p_ans_y);
-    p_html += "積集合" + dispAry(p_ans_intersection) + "<br>";
+    p_html += "積集合：" + dispAry(p_ans_intersection) + "<br>";
 
-    // 積集合
-    let p_ans_intersection = ArrayHelper.intersection(p_ans_x, p_ans_y);
-    p_html += "積集合" + dispAry(p_ans_intersection) + "<br>";
+    // 差集合
+    let p_ans_difference = ArrayHelper.difference(p_ans_x, p_ans_y);
+    p_html += "差集合：" + dispAry(p_ans_difference) + "<br>";
 
     p_cb.innerHTML = p_html;
+}
+
+let q007_disp = (x, y, z) => {
+    return x + "時の" + y + "は" + z;
+}
+
+let q007 = () => {
+    let p_cb = document.getElementById("q007");
+
+    x = document.getElementById("q007_x").value
+    y = document.getElementById("q007_y").value
+    z = document.getElementById("q007_z").value
+
+    p_cb.innerHTML = q007_disp(x, y, z);
 }
