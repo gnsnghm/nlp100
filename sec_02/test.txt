@@ -1,0 +1,6 @@
+name		, sex		, age	, barth
+taro		, male		, 20	, 2000/01/01
+hanako		, female	, 21	, 2001/02/02
+kobayashi	, male		, 22	, 2002/03/03
+hanako		, female	, 24	, 2004444/02
+
