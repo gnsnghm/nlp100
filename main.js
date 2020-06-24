@@ -123,6 +123,17 @@ let ArrayHelper = {
         let p_concat = x_a;
         p_concat = p_concat.filter((x, i, self) => p_temp.indexOf(x) == -1);
         return p_concat;
+    },
+
+    shuffle:(x_ary) => {
+        let p_ary = x_ary;
+        for(let i = p_ary.length;  i >= 0; i--) {
+            let p_rand = Math.floor(Math.random() * ( (i + 1)));
+
+            // 配列の数値を入れ替える
+            [p_ary[i], p_ary[p_rand]] = [p_ary[p_rand], p_ary[i]];
+        }
+        return p_ary;
     }
 }
 
@@ -162,9 +173,51 @@ let q007_disp = (x, y, z) => {
 let q007 = () => {
     let p_cb = document.getElementById("q007");
 
-    x = document.getElementById("q007_x").value
-    y = document.getElementById("q007_y").value
-    z = document.getElementById("q007_z").value
+    let x = document.getElementById("q007_x").value
+    let y = document.getElementById("q007_y").value
+    let z = document.getElementById("q007_z").value
 
     p_cb.innerHTML = q007_disp(x, y, z);
+}
+
+let cipher = (x_str) =>{
+    let p_ary_decode = [];
+    for(i = 0; i < x_str.length; i++) {
+        let p_charAt = x_str.charAt(i);
+        if(p_charAt.match(/[a-z]/)) {
+            let p_code_num = 219 - p_charAt.charCodeAt(0);
+            p_ary_decode[i] = String.fromCharCode(p_code_num);
+        } else {
+            p_ary_decode[i] = p_charAt;
+        }
+    }
+    return p_ary_decode.join("");
+}
+
+let q008 = () => {
+    let p_cb = document.getElementById("q008");
+    let p_str = document.getElementById("q008_str").value;
+
+    p_ans = cipher(p_str);
+
+    p_cb.innerHTML = "暗号化：" + p_ans + "<br>";
+    p_cb.innerHTML += "複合化：" + p_str;
+}
+
+let q009 = () => {
+    let p_cb = document.getElementById("q009");
+    let p_str = document.getElementById("q009_str").value;
+
+    let p_slice = p_str.replace(/(.)\s+([.,])/g, "$1$2").slice(" ").split(" ");
+
+    let p_ans = [];
+    if(p_slice.slice(" ").length >= 4) {
+        p_ans.push(p_slice.slice(0, 1));
+        p_ans.push(ArrayHelper.shuffle(p_slice.slice(1, p_slice.length - 1)).join(" "));
+        p_ans.push(p_slice.slice(-1));
+    } else {
+        p_ans = p_slice;
+    }
+
+    p_cb.innerHTML = p_ans.join(" ");
 }
