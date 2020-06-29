@@ -4,6 +4,11 @@
 * 参考URL(ほぼコピペ)：https://qiita.com/pppp403/items/08220614f3d69882b390
 */
 
+//
+// Globals
+//
+var g_england;
+
 /**
 記事データを取得し整形
 * @class wikiAPI
@@ -25,36 +30,40 @@ var wikiAPI = function (x_url) {
 
   /**
    * データの整形
-   * @METHOD SHAPING
-   * @PARAM {STRING} X_T T 行分割したテキスト
+   * @method SHAPING
+   * @param {STRING} X_T T 行分割したテキスト
    */
   this.shaping = (x_t) => {
     // カテゴリを抽出(q21, q22)
-    x_t.categories = x_t.text.match(/\[\[カテゴリ:[^\]]*?\]\]/g);
-    if (x_t.categolies) {
+    x_t.categories = x_t.text.match(/\[\[(カテゴリ|Category):[^\]]*?\]\]/g);
+    x_t.cleansingCategories = x_t.text.match(/\[\[(カテゴリ|Category):[^\]]*?\]\]/g);
+    if (x_t.categories) {
       for (let j = 0; j < x_t.categories.length; j++) {
-        x_t.categolies[j] = x_t.categolies[j].replace(/\[\[カテゴリ:([^\]]*?)\]\]/, "$1");
+        // x_t.cleansingCategories[j] = x_t.categories[j].replace(/\[\[(カテゴリ|Category):([^\]]*?)\]\]/, "$1");
+        x_t.cleansingCategories[j] = x_t.categories[j].replace(/\[\[(カテゴリ|Category):([^\]]*?)(\|.*)?\]\]/, "$2");
       }
     }
 
     // セクションを抽出(q23)
-    let p_match_section = /={2,} [^=]*? ={2,}/g;
-    x_t.sections = x_t.text.match(/={2,} [^=]*? ={2,}/g);
+    x_t.sections = x_t.text.match(/={2,}( )?[^=]*?( )?={2,}/g);
     if (x_t.sections) {
       for (let j = 0; j < x_t.sections.length; j++) {
         _level = x_t.sections[j].replace(/(={2,}).+/, "$1").length - 1
-        x_t.sections[j] = {
-          level: _level,
-          name: x_t.sections[j].replace(/^={2,} (.*?) ={2,}/, "$1")
-        }
+        x_t.sections[j] = x_t.sections[j].replace(/^={2,}(.*?)={2,}$/, "$1") + "(" + _level + ")";
+        // x_t.sections[j] = {
+        //   level: _level,
+        //   name: x_t.sections[j].replace(/^={2,} (.*?) ={2,}$/, "$1")
+        // }
       }
     }
 
     // ファイルの抽出(q24)
     x_t.files = x_t.text.match(/\[\[ファイル:[^\]]*?\]\]/g);
+    x_t.file = x_t.text.match(/\[\[ファイル:[^\]]*?\]\]/g);
     if (x_t.files) {
       for (var j = 0; j < x_t.files.length; j++) {
         _datas = x_t.files[j].replace(/\[\[ファイル:([^\]]*?)\]\]/, '$1').split("|");
+        x_t.file[j] = _datas[0];
         x_t.files[j] = {
           name: _datas[0],
           size: _datas[1],
@@ -114,10 +123,10 @@ var wikiAPI = function (x_url) {
     * @param {string} name 国名
     * @return jsonデータ
     */
-    this.getFlagImg = function (name) {
-      if (this.datas[name].baseData["国旗画像"]) {
+    this.getFlagImg = function (x_name) {
+      if (this.datas[x_name].baseData["国旗画像"]) {
         return $.ajax({
-          url: "https://en.wikipedia.org/w/api.php?action=query&titles=File:" + encodeURIComponent(this.datas[name].baseData["国旗画像"]) + '&prop=imageinfo&iiprop=url&format=json',
+          url: "https://en.wikipedia.org/w/api.php?action=query&titles=File:" + encodeURIComponent(this.datas[x_name].baseData["国旗画像"]) + '&prop=imageinfo&iiprop=url&format=json',
           type: 'get',
           context: this,
           dataType: 'jsonp'
@@ -128,6 +137,14 @@ var wikiAPI = function (x_url) {
 }
 
 $(function () {
+  // disp_area を隠す
+  $("#disp_area").hide();
+
+  $("#disp_hide").on("click", function () {
+    $("#disp_area").hide();
+  });
+
+  // イギリスの情報を取得
   let p_wiki = new wikiAPI('jawiki-country.json');
   p_wiki.getData.done(function (_data) {
     let p_list = _data.split("\n");
@@ -137,30 +154,36 @@ $(function () {
         this.shaping(p_parse);
       }
     }
-    // console.log(this.datas["イギリス"]);
-    p_info = this.datas["イギリス"];
-  })
-})
-
-$(function () {
-  $("#q020_area").hide();
-  // 指定ボタンを押下すると処理を開始する
-  $("#q020").on("click", function () {
-    let p_wiki = new wikiAPI('jawiki-country.json');
-    p_wiki.getData.done(function (_data) {
-      let p_list = _data.split("\n");
-      for (let i = 0; i < p_list.length; i++) {
-        if (p_list[i] != "") {
-          var p_parse = JSON.parse(p_list[i]);
-          this.shaping(p_parse);
-        }
-      }
-      $("#q020_area").text(this.datas["イギリス"].text); // div領域を表示
-      // $("#q020_area").html("ゆかりさんは天才ですから"); // div領域を表示
-      $("#q020_area").show(); // div領域を表示
-    });
+    g_england = this.datas["イギリス"];
   });
-  $("#q020_hide").on("click", function () {
-      $("#q020_area").hide();
+
+  //q20 
+  $("#q020").on("click", function () {
+    $("#disp_area").text(g_england.text);
+    $("#disp_area").show();
+  });
+
+  // q21
+  $("#q021").on("click", function () {
+    $("#disp_area").text(g_england.categories);
+    $("#disp_area").show();
+  });
+
+  // q22
+  $("#q022").on("click", function () {
+    $("#disp_area").text(g_england.cleansingCategories);
+    $("#disp_area").show();
+  });
+
+  // q23
+  $("#q023").on("click", function () {
+    $("#disp_area").text(g_england.sections);
+    $("#disp_area").show();
+  });
+
+  // q24
+  $("#q024").on("click", function () {
+    $("#disp_area").text(g_england.file);
+    $("#disp_area").show();
   });
 });

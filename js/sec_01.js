@@ -3,6 +3,10 @@
 * 第01章
 */
 
+/**
+ * 入力した文字列を反対から出力
+ * @param {string} x_str 反対向きにする文字列
+ */
 function q001(x_str) {
     let p_cb = document.getElementById("q001");
     p_cb.innerHTML = x_str.split("").reverse().join("");

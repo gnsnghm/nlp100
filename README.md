@@ -16,3 +16,7 @@
 
 ## 📋 問い合わせ
 ### [Twitter](https://twitter.com/gnsnghm)
+
+## 🙏 参考にしました
+### [JavaScript で言語処理100本ノック2015 第1章: 準備運動](https://qiita.com/pppp403/items/698bc2a55d29d5655b97)
+### [JavaScript で言語処理100本ノック2015 第3章: 正規表現](https://qiita.com/pppp403/items/08220614f3d69882b390)
