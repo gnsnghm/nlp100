@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 #	NLP 100
-#		q012
+#		q011
 #
 #		2020.06.26 by gnsnghm
 #
