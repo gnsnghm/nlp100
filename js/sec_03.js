@@ -4,9 +4,6 @@
 * 参考URL(正規表現など変更)：https://qiita.com/pppp403/items/08220614f3d69882b390
 */
 
-//
-// Globals
-//
 var g_england;
 
 /**
@@ -28,11 +25,13 @@ var wikiAPI = function (x_url) {
     dataType: 'text'
   });
 
+  // データクレンジング(q25-29)
   this.setBaseData = (x_targetLine) => {
     // キー配列に変換
     let _name = x_targetLine.replace(/([^=]*?)=[\s\S]*/, "$1").trim();
     let _val = x_targetLine.replace(/.*?=([\s\S]*)/, "$1").trim().replace(/\n/, "");
-    return { _name, _val };
+    // return { _name, _val };
+    return { "name": _name, "val": _val };
   }
 
   /**
@@ -81,22 +80,25 @@ var wikiAPI = function (x_url) {
 
       // 初期設定
       let _setLines = [];
+      let p_vals;
       let _setLinesQ25 = [];
       let _setLinesQ26 = [];
+      let _setLinesQ27 = [];
 
       for (let j = 1; j < _lines.length; j++) {
         let p_targetLine = _lines[j];
 
         if (j < _lines.length && p_targetLine != "") {
-          // cleansing
-          p_targetLine = p_targetLine.replace(/<br \/>/g, "");
+          p_targetLine = p_targetLine.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
 
           // q25
-          let { _name, _val } = this.setBaseData(p_targetLine);
-          _setLinesQ25[_name] = _val.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+          p_vals = this.setBaseData(p_targetLine);
+          _setLinesQ25[p_vals.name] = p_vals.val;
 
           // q26
-          p_targetLine = p_targetLine.replace(/'{2,}/g, '');
+          _setLinesQ26[p_vals.name] = p_vals.val.replace(/'{2,5}/g, "");
+
           // q27
           let _reg = /\[\[(.*?)\]\]/g;
           let _rep = "__reg__link__ptn__";
@@ -108,6 +110,7 @@ var wikiAPI = function (x_url) {
               let _cnp = _links[k].replace(_reg, "$1").split("|");
             }
           }
+
           // q28
           p_targetLine = p_targetLine
             .replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, "")
@@ -116,12 +119,13 @@ var wikiAPI = function (x_url) {
             .replace(/\[[^\[]*?]/g, "");
 
           // q28
-          let { _nameQ28, _valQ28 } = this.setBaseData(p_targetLine);
-          _setLines[_nameQ28] = _valQ28;
+          p_vals = this.setBaseData(p_targetLine);
+          _setLines[p_vals.name] = p_vals.val;
         }
       }
       x_t.baseData = _setLines;
       x_t.baseDataQ25 = _setLinesQ25;
+      x_t.baseDataQ26 = _setLinesQ26;
     }
     this.datas[x_t.title] = x_t;
     /**
@@ -147,6 +151,14 @@ var disp = (x_ary) => {
   p_html = "";
   for (let i = 0; i < x_ary.length; i++) {
     p_html += x_ary[i] + "<br>";
+  }
+  return p_html;
+}
+
+var dispDist = (x_dist) => {
+  let p_html = [];
+  for (let p_key in x_dist) {
+    p_html.push(p_key + "：" + x_dist[p_key]);
   }
   return p_html;
 }
@@ -208,11 +220,16 @@ $(function () {
 
   // q25
   $("#q025").on("click", function () {
-    // $("#disp_area").text("a");
-    let p_html = [];
-    for (let p_key in g_england.baseDataQ25) {
-      p_html.push(p_key + "：" + g_england.baseDataQ25[p_key]);
-    }
+    let p_html = dispDist(g_england.baseDataQ25);
+
+    $("#disp_area").html(disp(p_html));
+    $("#disp_area").show();
+  });
+
+  // q26
+  $("#q026").on("click", function () {
+    let p_html = dispDist(g_england.baseDataQ26);
+
     $("#disp_area").html(disp(p_html));
     $("#disp_area").show();
   });
